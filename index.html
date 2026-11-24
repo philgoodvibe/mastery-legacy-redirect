@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex">
+  <title>Continue to AiAi Mastery</title>
+</head>
+<body>
+  <p>AiAi Mastery has moved. <a id="continue" href="https://mastery.insight2impactai.com">Continue to the member portal</a>.</p>
+  <script>
+    const source = new URL(window.location.href);
+    const destination = new URL("https://mastery.insight2impactai.com");
+    const fragment = new URLSearchParams(source.hash.slice(1));
+    // Preserve release 47ff47b: old-provider callbacks require a fresh sign-in.
+    const legacyCallback = ["access_token", "refresh_token", "code", "token_hash", "error"].some(
+      (key) => fragment.has(key) || source.searchParams.has(key),
+    );
+    if (legacyCallback) {
+      destination.pathname = "/login";
+      destination.searchParams.set("error", "access_denied");
+    } else {
+      let path = source.pathname;
+      // The staging Pages URL has a repository prefix; the custom domain does not.
+      const prefix = "/mastery-legacy-redirect";
+      if (source.hostname === "philgoodvibe.github.io" && (path === prefix || path.startsWith(prefix + "/"))) {
+        path = path.slice(prefix.length) || "/";
+      }
+      destination.pathname = path;
+      destination.search = source.search;
+      destination.hash = source.hash;
+    }
+    document.getElementById("continue").href = destination.href;
+    window.location.replace(destination.href);
+  </script>
+</body>
+</html>
